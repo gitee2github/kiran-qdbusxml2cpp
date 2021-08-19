@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(qdbusxml2cpp-kiran)
+project(kiran-qdbusxml2cpp)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,11 +12,11 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS DBus Core)
 
-add_executable(qdbusxml2cpp-kiran qdbusxml2cpp-kiran.cpp)
+add_executable(kiran-qdbusxml2cpp kiran-qdbusxml2cpp.cpp)
 
-target_link_libraries(qdbusxml2cpp-kiran PRIVATE
+target_link_libraries(kiran-qdbusxml2cpp PRIVATE
         Qt5::Core
         Qt5::DBus)
 
-target_include_directories(qdbusxml2cpp-kiran PRIVATE
+target_include_directories(kiran-qdbusxml2cpp PRIVATE
         ${Qt5DBus_PRIVATE_INCLUDE_DIRS})
