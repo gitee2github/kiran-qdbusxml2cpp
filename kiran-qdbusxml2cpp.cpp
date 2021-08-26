@@ -50,8 +50,9 @@
 
 #define ANNOTATION_NO_WAIT "org.freedesktop.DBus.Method.NoReply"
 
-#define HANDLE_DBUS_PROPERTY_CHANGED_SLOT_NAME "handleDbusPropertyChanged"
-#define SEND_PROPERTY_CHANGED_SIGNAL_FUNC_NAME "sendPropertyChangedSignal"
+#define HANDLE_DBUS_PROPERTY_CHANGED_SLOT_NAME        "handleDbusPropertyChanged"
+#define SEND_DBUS_PROPERTY_CHANGED_DETAIL_SIGNAL_FUNC_NAME "sendPropertyChangedDetailSignal"
+#define DBUS_PROPERTY_CHANGED_SIGNAL_FUNC_NAME             "dbusPropertyChanged"
 
 static QString globalClassName;
 static QString parentClassName;
@@ -577,7 +578,7 @@ static void writeProxy(const QString &filename, const QDBusIntrospection::Interf
            << endl;
 
         // send dbus property changed signal
-        cs << "void "<< SEND_PROPERTY_CHANGED_SIGNAL_FUNC_NAME <<"(" << className << "* ptr" << ",const QString &propertyName,QVariant value)" << endl
+        cs << "void "<< SEND_DBUS_PROPERTY_CHANGED_DETAIL_SIGNAL_FUNC_NAME <<"(" << className << "* ptr" << ",const QString &propertyName,QVariant value)" << endl
            << "{" << endl;
         for (const auto property : interface->properties) {
             QString emitChangedSignalValue = property.annotations.value("org.freedesktop.DBus.Property.EmitsChangedSignal", "true");
@@ -627,7 +628,8 @@ static void writeProxy(const QString &filename, const QDBusIntrospection::Interf
               "        // property type is the same as the meta property property\n"
               "        if( metaProperty.userType() == propertyValue.userType() )\n"
               "        {\n"
-              "            " SEND_PROPERTY_CHANGED_SIGNAL_FUNC_NAME "(this,property,propertyValue);\n"
+              "            Q_EMIT " DBUS_PROPERTY_CHANGED_SIGNAL_FUNC_NAME "(property,propertyValue);\n"
+              "            " SEND_DBUS_PROPERTY_CHANGED_DETAIL_SIGNAL_FUNC_NAME "(this,property,propertyValue);\n"
               "            continue;\n"
               "        }\n"
               "        QDBusArgument dbusArg = propertyValue.value<QDBusArgument>();\n"
@@ -636,7 +638,7 @@ static void writeProxy(const QString &filename, const QDBusIntrospection::Interf
               "        {\n"
               "            QString errmsg = QString(\"Unexpected `%1' (%2)\"\n"
               "                                     \"when retrieving property '%3.%4'(expected type '%5' (%6)\");\n"
-              "            errmsg.arg(propertyValue.typeName(),propertySignature,interface(),metaProperty.name(),metaProperty.typeName(),metaPropertySignature);\n"
+              "            errmsg = errmsg.arg(propertyValue.typeName(),propertySignature,interface(),metaProperty.name(),metaProperty.typeName(),metaPropertySignature);\n"
               "            qWarning() << errmsg;\n"
               "            continue;\n"
               "        }\n"
@@ -647,11 +649,12 @@ static void writeProxy(const QString &filename, const QDBusIntrospection::Interf
               "        {\n"
               "            QString errmsg = QString(\"Unexpected `%1' (%2)\"\n"
               "                                     \"when retrieving property '%3.%4'(expected type '%5' (%6)\");\n"
-              "            errmsg.arg(propertyValue.typeName(),propertySignature,interface(),metaProperty.name(),metaProperty.typeName(),metaPropertySignature);\n"
+              "            errmsg = errmsg.arg(propertyValue.typeName(),propertySignature,interface(),metaProperty.name(),metaProperty.typeName(),metaPropertySignature);\n"
               "            qWarning() << errmsg;\n"
               "            continue;\n"
               "        }\n"
-              "        " SEND_PROPERTY_CHANGED_SIGNAL_FUNC_NAME "(this,property,result);\n"
+              "        Q_EMIT " DBUS_PROPERTY_CHANGED_SIGNAL_FUNC_NAME "(property,result);\n"
+              "        " SEND_DBUS_PROPERTY_CHANGED_DETAIL_SIGNAL_FUNC_NAME "(this,property,result);\n"
               "    }\n"
            << "}" << endl;
 
@@ -833,6 +836,7 @@ static void writeProxy(const QString &filename, const QDBusIntrospection::Interf
         hs << endl;
 
         hs << "Q_SIGNALS: // PROPERTY CHANGED SIGNALS" << endl;
+        hs << "    " << "void " << DBUS_PROPERTY_CHANGED_SIGNAL_FUNC_NAME << "(const QString &name,const QVariant &value);" <<  endl;
         for (const QDBusIntrospection::Property &property : interface->properties)
         {
             QString emitChangedSignalValue = property.annotations.value("org.freedesktop.DBus.Property.EmitsChangedSignal", "true");

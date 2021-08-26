@@ -47,5 +47,14 @@ $ sudo make install
 $ kiran-qdbusxml2cpp --help
 ```
 
+### cmake项目中使用方法
+```cmake
+find_package(KiranDBusGenerate REQUIRED)
+set(KSD_ACCOUNTS_XML data/com.kylinsec.Kiran.SystemDaemon.Accounts.xml)
+#kiran_qt5_add_dubs_interface使用方法等同于qt5_add_dbus_interface
+#具体更详细使用方法请查看qt5_add_dbus_interface的官方文档
+kiran_qt5_add_dbus_interface(KSD_ACCOUNTS_SRC ${KSD_ACCOUNTS_XML} ksd_accounts_proxy)
+```
+
 
 

@@ -1,0 +1,14 @@
+set(kirandbusxml2cpp_install_prefix @KIRANDBUSXML2CPP_INSTALL_PATH@)
+
+if (NOT TARGET kiran::qdbusxml2cpp)
+    add_executable(kiran::qdbusxml2cpp IMPORTED)
+
+    set(imported_location "${kirandbusxml2cpp_install_prefix}/kiran-qdbusxml2cpp")
+    set_target_properties(kiran::qdbusxml2cpp PROPERTIES
+            IMPORTED_LOCATION ${imported_location}
+            )
+endif()
+
+set(_KIRANDBUSXML2CPP_EXECUTABLE kiran::qdbusxml2cpp)
+
+include("${CMAKE_CURRENT_LIST_DIR}/KiranDBusGenerateMacros.cmake")
