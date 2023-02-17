@@ -1,0 +1,7 @@
+variables:
+  RPM_BUILD_REQUIRES: 'cmake gcc-c++ qt5-qtbase-devel qt5-qtbase-private-devel'
+
+include:
+  - project: 'os/gitlab-ci'
+    ref: main
+    file: '/cmake/cxx.gitlab-ci.yml'
